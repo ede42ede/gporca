@@ -175,6 +175,10 @@ namespace gpopt
 			static
 			CExpression *PexprNormalize(IMemoryPool *pmp, CExpression *pexpr);
 
+			// main driver
+			static
+			CExpression *PexprNormalize2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// normalize joins so that they are on colrefs
 			static
 			CExpression *PexprNormalizeJoins(IMemoryPool *pmp, CExpression *pexpr);

@@ -213,6 +213,10 @@ namespace gpopt
 			static
 			CExpression *PexprFactorize(IMemoryPool *pmp, CExpression *pexpr);
 
+			// factorize common expressions
+			static
+			CExpression *PexprFactorize2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// compute disjunctive pre-filters that can be pushed to the column creators
 			static
 			CExpression *PexprExtractInferredFilters(IMemoryPool *pmp, CExpression *pexpr);

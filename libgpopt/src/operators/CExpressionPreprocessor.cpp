@@ -50,6 +50,26 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CExpression *
+CExpressionPreprocessor::PexprEliminateSelfComparison2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprEliminateSelfComparison:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprEliminateSelfComparison(pmp,pexpr);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprEliminateSelfComparison
+//
+//	@doc:
+//		Eliminate self comparisons in the given expression
+//
+//---------------------------------------------------------------------------
+CExpression *
 CExpressionPreprocessor::PexprEliminateSelfComparison
 	(
 	IMemoryPool *pmp,
@@ -91,6 +111,27 @@ CExpressionPreprocessor::PexprEliminateSelfComparison
 //
 //---------------------------------------------------------------------------
 CExpression *
+CExpressionPreprocessor::PexprPruneSuperfluousEquality2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprPruneSuperfluousEquality:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprPruneSuperfluousEquality(pmp,pexpr);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprPruneSuperfluousEquality
+//
+//	@doc:
+//		Remove superfluous equality operations
+//
+//
+//---------------------------------------------------------------------------
+CExpression *
 CExpressionPreprocessor::PexprPruneSuperfluousEquality
 	(
 	IMemoryPool *pmp,
@@ -119,6 +160,32 @@ CExpressionPreprocessor::PexprPruneSuperfluousEquality
 	COperator *pop = pexpr->Pop();
 	pop->AddRef();
 	return GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexprChildren);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprTrimExistentialSubqueries
+//
+//	@doc:
+//		An existential subquery whose inner expression is a GbAgg
+//		with no grouping columns is replaced with a Boolean constant
+//
+//		Example:
+//
+//			exists(select sum(i) from X) --> True
+//			not exists(select sum(i) from X) --> False
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprTrimExistentialSubqueries2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprTrimExistentialSubqueries:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprTrimExistentialSubqueries(pmp,pexpr);
 }
 
 //---------------------------------------------------------------------------
@@ -188,6 +255,32 @@ CExpressionPreprocessor::PexprTrimExistentialSubqueries
 	return GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexprChildren);
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprSimplifyQuantifiedSubqueries
+//
+//	@doc:
+//		A quantified subquery with maxcard 1 is simplified as a scalar
+//		subquery
+//
+//		Example:
+//
+//			a = ANY (select sum(i) from X) --> a = (select sum(i) from X)
+//			a <> ALL (select sum(i) from X) --> a <> (select sum(i) from X)
+//
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprSimplifyQuantifiedSubqueries2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprSimplifyQuantifiedSubqueries:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprSimplifyQuantifiedSubqueries(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -273,6 +366,32 @@ CExpressionPreprocessor::PexprSimplifyQuantifiedSubqueries
 	return GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexprChildren);
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprUnnestScalarSubqueries
+//
+//	@doc:
+//		Preliminary unnesting of scalar subqueries
+//
+//
+//		Example:
+//			Input:   SELECT k, (SELECT (SELECT Y.i FROM Y WHERE Y.j=X.j)) from X
+//			Output:  SELECT k, (SELECT Y.i FROM Y WHERE Y.j=X.j) from X
+//
+//
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprUnnestScalarSubqueries2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprUnnestScalarSubqueries:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprUnnestScalarSubqueries(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -367,6 +486,27 @@ CExpressionPreprocessor::PexprUnnestScalarSubqueries
 //
 //---------------------------------------------------------------------------
 CExpression *
+CExpressionPreprocessor::PexprRemoveSuperfluousLimit2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprRemoveSuperfluousLimit:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprRemoveSuperfluousLimit(pmp, pexpr);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprRemoveSuperfluousLimit
+//
+//	@doc:
+//		An intermediate limit is removed if it has neither row count
+//		nor offset
+//
+//---------------------------------------------------------------------------
+CExpression *
 CExpressionPreprocessor::PexprRemoveSuperfluousLimit
 	(
 	IMemoryPool *pmp,
@@ -409,6 +549,45 @@ CExpressionPreprocessor::PexprRemoveSuperfluousLimit
 	return GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexprChildren);
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprRemoveSuperfluousOuterRefs
+//
+//	@doc:
+//		Remove outer references from order spec inside limit, grouping columns
+//		in GbAgg, and Partition/Order columns in window operators
+//
+//		Example, for the schema: t(a, b), s(i, j)
+//		The query:
+//			select * from t where a < all (select i from s order by j, b limit 1);
+//		should be equivalent to:
+//			select * from t where a < all (select i from s order by j limit 1);
+//		after removing the outer reference (b) from the order by clause of the
+//		subquery (all tuples in the subquery have the same value for the outer ref)
+//
+//		Similarly,
+//			select * from t where a in (select count(i) from s group by j, b);
+//		is equivalent to:
+//			select * from t where a in (select count(i) from s group by j);
+//
+//		Similarly,
+//			select * from t where a in (select row_number() over (partition by t.a order by t.b) from s);
+//		is equivalent to:
+//			select * from t where a in (select row_number() over () from s);
+//
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprRemoveSuperfluousOuterRefs2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprRemoveSuperfluousOuterRefs:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprRemoveSuperfluousOuterRefs(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -704,6 +883,26 @@ CExpressionPreprocessor::PexprConvert2In
 //
 //---------------------------------------------------------------------------
 CExpression *
+CExpressionPreprocessor::PexprCollapseInnerJoins2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprCollapseInnerJoins:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprCollapseInnerJoins(pmp,pexpr);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprCollapseInnerJoins
+//
+//	@doc:
+//		Collapse cascaded inner joins into NAry-joins
+//
+//---------------------------------------------------------------------------
+CExpression *
 CExpressionPreprocessor::PexprCollapseInnerJoins
 	(
 	IMemoryPool *pmp,
@@ -778,6 +977,25 @@ CExpressionPreprocessor::PexprCollapseInnerJoins
 	return GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexprChildren);
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprCollapseProjects
+//
+//	@doc:
+//		Collapse cascaded logical project operators
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprCollapseProjects2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprCollapseProjects:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprCollapseProjects(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -823,6 +1041,27 @@ CExpressionPreprocessor::PexprCollapseProjects
 	pexprNew->Release();
 
 	return pexprCollapsed;
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprProjBelowSubquery
+//
+//	@doc:
+//		Insert dummy project element below scalar subquery when the (a) the scalar
+//      subquery is below a project and (b) output column is an outer reference
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprProjBelowSubquery2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr,
+	BOOL fUnderPrList
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprProjBelowSubquery:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprProjBelowSubquery(pmp,pexpr,fUnderPrList);
 }
 
 //---------------------------------------------------------------------------
@@ -938,6 +1177,26 @@ CExpressionPreprocessor::PexprProjBelowSubquery
 //
 //---------------------------------------------------------------------------
 CExpression *
+CExpressionPreprocessor::PexprCollapseUnionUnionAll2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprCollapseUnionUnionAll:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprCollapseUnionUnionAll(pmp,pexpr);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprCollapseUnionUnionAll
+//
+//	@doc:
+//		Collapse cascaded union/union all into an NAry union/union all operator
+//
+//---------------------------------------------------------------------------
+CExpression *
 CExpressionPreprocessor::PexprCollapseUnionUnionAll
 	(
 	IMemoryPool *pmp,
@@ -1028,6 +1287,25 @@ CExpressionPreprocessor::PexprCollapseUnionUnionAll
 	return GPOS_NEW(pmp) CExpression(pmp, popNew, pdrgpexprNew);
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprOuterJoinToInnerJoin
+//
+//	@doc:
+//		Transform outer joins into inner joins
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprOuterJoinToInnerJoin2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprOuterJoinToInnerJoin:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprOuterJoinToInnerJoin(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -1617,6 +1895,27 @@ CExpressionPreprocessor::PexprFromConstraints
 //
 //---------------------------------------------------------------------------
 CExpression *
+CExpressionPreprocessor::PexprPruneEmptySubtrees2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprPruneEmptySubtrees:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprPruneEmptySubtrees(pmp,pexpr);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprPruneEmptySubtrees
+//
+//	@doc:
+// 		Eliminate subtrees that have a zero output cardinality, replacing them
+//		with a const table get with the same output schema and zero tuples
+//
+//---------------------------------------------------------------------------
+CExpression *
 CExpressionPreprocessor::PexprPruneEmptySubtrees
 	(
 	IMemoryPool *pmp,
@@ -1658,6 +1957,25 @@ CExpressionPreprocessor::PexprPruneEmptySubtrees
 	return GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexpr);
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprRemoveUnusedCTEs2
+//
+//	@doc:
+// 		Eliminate CTE Anchors for CTEs that have zero consumers
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprRemoveUnusedCTEs2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprRemoveUnusedCTEs:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprRemoveUnusedCTEs(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -1826,6 +2144,26 @@ CExpressionPreprocessor::AddPredsToCTEProducers
 	phm->Release();
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprAddPredicatesFromConstraints
+//
+//	@doc:
+//		Derive constraints on given expression, and add new predicates
+//		by implication
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprAddPredicatesFromConstraints2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprAddPredicatesFromConstraints:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprAddPredicatesFromConstraints(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -1865,6 +2203,25 @@ CExpressionPreprocessor::PexprAddPredicatesFromConstraints
 	return pexprDeduped;
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprInferPredicates
+//
+//	@doc:
+//		 Driver for inferring predicates from constraints
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprInferPredicates2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprInferPredicates:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprInferPredicates(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -1903,6 +2260,26 @@ CExpressionPreprocessor::PexprInferPredicates
 	return pexprWithPreds;
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionPreprocessor::PexprPruneUnusedComputedCols
+//
+//	@doc:
+//		 Workhorse for pruning unused computed columns
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionPreprocessor::PexprPruneUnusedComputedCols2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr,
+	CColRefSet *pcrsReqd
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprPruneUnusedComputedCols:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprPruneUnusedComputedCols(pmp,pexpr,pcrsReqd);
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -2120,42 +2497,42 @@ CExpressionPreprocessor::PexprPreprocess
 	CAutoTimer at("\n[OPT]: Expression Preprocessing Time", GPOS_FTRACE(EopttracePrintOptStats));
 
 	// (1) remove unused CTE anchors
-	CExpression *pexprNoUnusedCTEs = PexprRemoveUnusedCTEs(pmp, pexpr);
+	CExpression *pexprNoUnusedCTEs = PexprRemoveUnusedCTEs2(pmp, pexpr);
 	GPOS_CHECK_ABORT;
 
 	// (2) remove intermediate superfluous limit
-	CExpression *pexprSimplified = PexprRemoveSuperfluousLimit(pmp, pexprNoUnusedCTEs);
+	CExpression *pexprSimplified = PexprRemoveSuperfluousLimit2(pmp, pexprNoUnusedCTEs);
 	GPOS_CHECK_ABORT;
 	pexprNoUnusedCTEs->Release();
 
 	// (3) remove superfluous outer references from the order spec in limits, grouping columns in GbAgg, and
 	// Partition/Order columns in window operators
-	CExpression *pexprOuterRefsEleminated = PexprRemoveSuperfluousOuterRefs(pmp, pexprSimplified);
+	CExpression *pexprOuterRefsEleminated = PexprRemoveSuperfluousOuterRefs2(pmp, pexprSimplified);
 	GPOS_CHECK_ABORT;
 	pexprSimplified->Release();
 
 	// (4) trim unnecessary existential subqueries
-	CExpression *pexprTrimmed = PexprTrimExistentialSubqueries(pmp, pexprOuterRefsEleminated);
+	CExpression *pexprTrimmed = PexprTrimExistentialSubqueries2(pmp, pexprOuterRefsEleminated);
 	GPOS_CHECK_ABORT;
 	pexprOuterRefsEleminated->Release();
 
 	// (5) remove superfluous equality
-	CExpression *pexprTrimmed2 = PexprPruneSuperfluousEquality(pmp, pexprTrimmed);
+	CExpression *pexprTrimmed2 = PexprPruneSuperfluousEquality2(pmp, pexprTrimmed);
 	GPOS_CHECK_ABORT;
 	pexprTrimmed->Release();
 
 	// (6) simplify quantified subqueries
-	CExpression *pexprSubqSimplified = PexprSimplifyQuantifiedSubqueries(pmp, pexprTrimmed2);
+	CExpression *pexprSubqSimplified = PexprSimplifyQuantifiedSubqueries2(pmp, pexprTrimmed2);
 	GPOS_CHECK_ABORT;
 	pexprTrimmed2->Release();
 
 	// (7) do preliminary unnesting of scalar subqueries
-	CExpression *pexprSubqUnnested = PexprUnnestScalarSubqueries(pmp, pexprSubqSimplified);
+	CExpression *pexprSubqUnnested = PexprUnnestScalarSubqueries2(pmp, pexprSubqSimplified);
 	GPOS_CHECK_ABORT;
 	pexprSubqSimplified->Release();
 
 	// (8) unnest AND/OR/NOT predicates
-	CExpression *pexprUnnested = CExpressionUtils::PexprUnnest(pmp, pexprSubqUnnested);
+	CExpression *pexprUnnested = CExpressionUtils::PexprUnnest2(pmp, pexprSubqUnnested);
 	GPOS_CHECK_ABORT;
 	pexprSubqUnnested->Release();
 
@@ -2170,22 +2547,23 @@ CExpressionPreprocessor::PexprPreprocess
 	}
 
 	// (9) infer predicates from constraints
-	CExpression *pexprInferredPreds = PexprInferPredicates(pmp, pexprConvert2In);
+	CExpression *pexprInferredPreds = PexprInferPredicates2(pmp, pexprConvert2In);
 	GPOS_CHECK_ABORT;
 	pexprConvert2In->Release();
 
 	// (10) eliminate self comparisons
-	CExpression *pexprSelfCompEliminated = PexprEliminateSelfComparison(pmp, pexprInferredPreds);
+	CExpression *pexprSelfCompEliminated = PexprEliminateSelfComparison2(pmp, pexprInferredPreds);
 	GPOS_CHECK_ABORT;
 	pexprInferredPreds->Release();
 
 	// (11) remove duplicate AND/OR children
-	CExpression *pexprDeduped = CExpressionUtils::PexprDedupChildren(pmp, pexprSelfCompEliminated);
+	CExpression *pexprDeduped = CExpressionUtils::PexprDedupChildren2(pmp, pexprSelfCompEliminated);
 	GPOS_CHECK_ABORT;
 	pexprSelfCompEliminated->Release();
 
+
 	// (12) factorize common expressions
-	CExpression *pexprFactorized = CExpressionFactorizer::PexprFactorize(pmp, pexprDeduped);
+	CExpression *pexprFactorized = CExpressionFactorizer::PexprFactorize2(pmp, pexprDeduped);
 	GPOS_CHECK_ABORT;
 	pexprDeduped->Release();
 
@@ -2196,51 +2574,52 @@ CExpressionPreprocessor::PexprPreprocess
 	pexprFactorized->Release();
 
 	// (14) pre-process window functions
-	CExpression *pexprWindowPreprocessed = CWindowPreprocessor::PexprPreprocess(pmp, pexprPrefiltersExtracted);
+	CExpression *pexprWindowPreprocessed = CWindowPreprocessor::PexprPreprocess2(pmp, pexprPrefiltersExtracted);
 	GPOS_CHECK_ABORT;
 	pexprPrefiltersExtracted->Release();
 
 	// (15) collapse cascaded union / union all
-	CExpression *pexprNaryUnionUnionAll = PexprCollapseUnionUnionAll(pmp, pexprWindowPreprocessed);
+	CExpression *pexprNaryUnionUnionAll = PexprCollapseUnionUnionAll2(pmp, pexprWindowPreprocessed);
 	pexprWindowPreprocessed->Release();
 
 	// (16) eliminate unused computed columns
-	CExpression *pexprNoUnusedPrEl = PexprPruneUnusedComputedCols(pmp, pexprNaryUnionUnionAll, pcrsOutputAndOrderCols);
+	CExpression *pexprNoUnusedPrEl = PexprPruneUnusedComputedCols2(pmp, pexprNaryUnionUnionAll, pcrsOutputAndOrderCols);
 	GPOS_CHECK_ABORT;
 	pexprNaryUnionUnionAll->Release();
 
+	return pexprNoUnusedPrEl;
 	// (17) normalize expression
-	CExpression *pexprNormalized = CNormalizer::PexprNormalize(pmp, pexprNoUnusedPrEl);
+	CExpression *pexprNormalized = CNormalizer::PexprNormalize2(pmp, pexprNoUnusedPrEl);
 	GPOS_CHECK_ABORT;
 	pexprNoUnusedPrEl->Release();
 
 	// (18) transform outer join into inner join whenever possible
-	CExpression *pexprLOJToIJ = PexprOuterJoinToInnerJoin(pmp, pexprNormalized);
+	CExpression *pexprLOJToIJ = PexprOuterJoinToInnerJoin2(pmp, pexprNormalized);
 	GPOS_CHECK_ABORT;
 	pexprNormalized->Release();
 
 	// (19) collapse cascaded inner joins
-	CExpression *pexprCollapsed = PexprCollapseInnerJoins(pmp, pexprLOJToIJ);
+	CExpression *pexprCollapsed = PexprCollapseInnerJoins2(pmp, pexprLOJToIJ);
 	GPOS_CHECK_ABORT;
 	pexprLOJToIJ->Release();
 
 	// (20) after transforming outer joins to inner joins, we may be able to generate more predicates from constraints
-	CExpression *pexprWithPreds = PexprAddPredicatesFromConstraints(pmp, pexprCollapsed);
+	CExpression *pexprWithPreds = PexprAddPredicatesFromConstraints2(pmp, pexprCollapsed);
 	GPOS_CHECK_ABORT;
 	pexprCollapsed->Release();
 
 	// (21) eliminate empty subtrees
-	CExpression *pexprPruned = PexprPruneEmptySubtrees(pmp, pexprWithPreds);
+	CExpression *pexprPruned = PexprPruneEmptySubtrees2(pmp, pexprWithPreds);
 	GPOS_CHECK_ABORT;
 	pexprWithPreds->Release();
 
 	// (22) collapse cascade of projects
-	CExpression *pexprCollapsedProjects = PexprCollapseProjects(pmp, pexprPruned);
+	CExpression *pexprCollapsedProjects = PexprCollapseProjects2(pmp, pexprPruned);
 	GPOS_CHECK_ABORT;
 	pexprPruned->Release();
 
 	// (23) insert dummy project when the scalar subquery is under a project and returns an outer reference
-	CExpression *pexprSubquery = PexprProjBelowSubquery(pmp, pexprCollapsedProjects, false /* fUnderPrList */);
+	CExpression *pexprSubquery = PexprProjBelowSubquery2(pmp, pexprCollapsedProjects, false /* fUnderPrList */);
 	GPOS_CHECK_ABORT;
 	pexprCollapsedProjects->Release();
 

@@ -150,6 +150,26 @@ CExpressionUtils::PdrgpexprUnnestChildren
 //
 //---------------------------------------------------------------------------
 CExpression *
+CExpressionUtils::PexprUnnest2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprUnnest:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprUnnest(pmp,pexpr);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionUtils::PexprUnnest
+//
+//	@doc:
+//		Unnest AND/OR/NOT predicates
+//
+//---------------------------------------------------------------------------
+CExpression *
 CExpressionUtils::PexprUnnest
 	(
 	IMemoryPool *pmp,
@@ -265,6 +285,26 @@ CExpressionUtils::PexprPushNotOneLevel
 					);
 }
 
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionUtils::PexprDedupChildren
+//
+//	@doc:
+//		Remove duplicate AND/OR children
+//
+//---------------------------------------------------------------------------
+CExpression *
+CExpressionUtils::PexprDedupChildren2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprDedupChildren:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprDedupChildren(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:

@@ -82,6 +82,10 @@ namespace gpopt
 			static
 			CExpression *PexprPreprocess(IMemoryPool *pmp, CExpression *pexpr);
 
+			// main driver
+			static
+			CExpression *PexprPreprocess2(IMemoryPool *pmp, CExpression *pexpr);
+
 	}; // class CWindowPreprocessor
 }
 

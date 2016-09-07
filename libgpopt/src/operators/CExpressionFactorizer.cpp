@@ -323,6 +323,27 @@ CExpressionFactorizer::PexprDiscoverFactors
 //
 //---------------------------------------------------------------------------
 CExpression *
+CExpressionFactorizer::PexprFactorize2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprFactorize:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprFactorize(pmp,pexpr);
+}
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CExpressionFactorizer::PexprFactorize
+//
+//	@doc:
+//		Factorize common scalar expressions
+//
+//
+//---------------------------------------------------------------------------
+CExpression *
 CExpressionFactorizer::PexprFactorize
 	(
 	IMemoryPool *pmp,
@@ -869,6 +890,9 @@ CExpressionFactorizer::PexprExtractInferredFilters
 	CExpression *pexpr
 	)
 {
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprExtractInferredFilters:", GPOS_FTRACE(EopttracePrintOptStats));
+
 	return PexprProcessDisjDescendents
 	  (
 	   pmp,

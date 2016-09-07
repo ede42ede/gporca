@@ -1021,6 +1021,26 @@ CNormalizer::PushThru
 	*ppdrgpexprRemaining = pdrgpexprUnpushable;
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CNormalizer::PexprNormalize
+//
+//	@doc:
+//		Main driver
+//
+//---------------------------------------------------------------------------
+CExpression *
+CNormalizer::PexprNormalize2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: PexprNormalize:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprNormalize(pmp,pexpr);
+}
+
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -1039,6 +1059,7 @@ CNormalizer::PexprNormalize
 {
 	GPOS_CHECK_STACK_SIZE;
 	GPOS_ASSERT(NULL != pexpr);
+
 
 	if (0 == pexpr->UlArity())
 	{

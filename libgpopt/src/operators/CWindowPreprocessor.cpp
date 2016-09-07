@@ -403,6 +403,25 @@ CWindowPreprocessor::PexprSeqPrj2Join
 				);
 }
 
+//---------------------------------------------------------------------------
+//	@function:
+//		CWindowPreprocessor::PexprPreprocess
+//
+//	@doc:
+//		Main driver
+//
+//---------------------------------------------------------------------------
+CExpression *
+CWindowPreprocessor::PexprPreprocess2
+	(
+	IMemoryPool *pmp,
+	CExpression *pexpr
+	)
+{
+	GPOS_ASSERT(NULL != pexpr);
+	CAutoTimer at("\n[OPT]: Expression Preprocessing Time: CWindowPreprocessor::PexprPreprocess:", GPOS_FTRACE(EopttracePrintOptStats));
+	return PexprPreprocess(pmp,pexpr);
+}
 
 //---------------------------------------------------------------------------
 //	@function:

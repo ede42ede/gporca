@@ -68,9 +68,17 @@ namespace gpopt
 			static
 			CExpression *PexprDedupChildren(IMemoryPool *pmp, CExpression *pexpr);
 
+			// remove duplicate AND/OR children
+			static
+			CExpression *PexprDedupChildren2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// unnest AND/OR/NOT predicates
 			static
 			CExpression *PexprUnnest(IMemoryPool *pmp, CExpression *pexpr);
+
+			// unnest AND/OR/NOT predicates
+			static
+			CExpression *PexprUnnest2(IMemoryPool *pmp, CExpression *pexpr);
 	};
 }
 

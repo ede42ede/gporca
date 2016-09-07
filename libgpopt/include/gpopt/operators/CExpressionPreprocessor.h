@@ -77,6 +77,10 @@ namespace gpopt
 			static
 			CExpression *PexprEliminateSelfComparison(IMemoryPool *pmp, CExpression *pexpr);
 
+			// eliminate self comparisons
+			static
+			CExpression *PexprEliminateSelfComparison2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// remove CTE Anchor nodes
 			static
 			CExpression *PexprRemoveCTEAnchors(IMemoryPool *pmp, CExpression *pexpr);
@@ -85,25 +89,49 @@ namespace gpopt
 			static
 			CExpression *PexprPruneSuperfluousEquality(IMemoryPool *pmp, CExpression *pexpr);
 
+			// trim superfluos equality
+			static
+			CExpression *PexprPruneSuperfluousEquality2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// trim existential subqueries
 			static
 			CExpression *PexprTrimExistentialSubqueries(IMemoryPool *pmp, CExpression *pexpr);
+
+			// trim existential subqueries
+			static
+			CExpression *PexprTrimExistentialSubqueries2(IMemoryPool *pmp, CExpression *pexpr);
 
 			// simplify quantified subqueries
 			static
 			CExpression *PexprSimplifyQuantifiedSubqueries(IMemoryPool *pmp, CExpression *pexpr);
 
+			// simplify quantified subqueries
+			static
+			CExpression *PexprSimplifyQuantifiedSubqueries2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// preliminary unnesting of scalar  subqueries
 			static
 			CExpression *PexprUnnestScalarSubqueries(IMemoryPool *pmp, CExpression *pexpr);
+
+			// preliminary unnesting of scalar  subqueries
+			static
+			CExpression *PexprUnnestScalarSubqueries2(IMemoryPool *pmp, CExpression *pexpr);
 
 			// remove superfluous limit nodes
 			static
 			CExpression *PexprRemoveSuperfluousLimit(IMemoryPool *pmp, CExpression *pexpr);
 
+			// remove superfluous limit nodes
+			static
+			CExpression *PexprRemoveSuperfluousLimit2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// remove superfluous outer references from limit, group by and window operators
 			static
 			CExpression *PexprRemoveSuperfluousOuterRefs(IMemoryPool *pmp, CExpression *pexpr);
+
+			// remove superfluous outer references from limit, group by and window operators
+			static
+			CExpression *PexprRemoveSuperfluousOuterRefs2(IMemoryPool *pmp, CExpression *pexpr);
 
 			// generate predicates based on derived constraint properties
 			static
@@ -117,29 +145,57 @@ namespace gpopt
 			static
 			CExpression *PexprPruneEmptySubtrees(IMemoryPool *pmp, CExpression *pexpr);
 
+			// eliminate subtrees that have zero output cardinality
+			static
+			CExpression *PexprPruneEmptySubtrees2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// collapse cascaded inner joins into NAry-joins
 			static
 			CExpression *PexprCollapseInnerJoins(IMemoryPool *pmp, CExpression *pexpr);
+
+			// collapse cascaded inner joins into NAry-joins
+			static
+			CExpression *PexprCollapseInnerJoins2(IMemoryPool *pmp, CExpression *pexpr);
 
 			// collapse cascaded logical project operators
 			static
 			CExpression *PexprCollapseProjects(IMemoryPool *pmp, CExpression *pexpr);
 
+			// collapse cascaded logical project operators
+			static
+			CExpression *PexprCollapseProjects2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// add dummy project element below scalar subquery when the output column is an outer reference
 			static
 			CExpression *PexprProjBelowSubquery(IMemoryPool *pmp, CExpression *pexpr, BOOL fUnderPrList);
+
+			// add dummy project element below scalar subquery when the output column is an outer reference
+			static
+			CExpression *PexprProjBelowSubquery2(IMemoryPool *pmp, CExpression *pexpr, BOOL fUnderPrList);
 
 			// collapse cascaded union/union all into an NAry union/union all operator
 			static
 			CExpression *PexprCollapseUnionUnionAll(IMemoryPool *pmp, CExpression *pexpr);
 
+			// collapse cascaded union/union all into an NAry union/union all operator
+			static
+			CExpression *PexprCollapseUnionUnionAll2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// transform outer joins into inner joins whenever possible
 			static
 			CExpression *PexprOuterJoinToInnerJoin(IMemoryPool *pmp, CExpression *pexpr);
 
+			// transform outer joins into inner joins whenever possible
+			static
+			CExpression *PexprOuterJoinToInnerJoin2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// eliminate CTE Anchors for CTEs that have zero consumers
 			static
 			CExpression *PexprRemoveUnusedCTEs(IMemoryPool *pmp, CExpression *pexpr);
+
+			// eliminate CTE Anchors for CTEs that have zero consumers
+			static
+			CExpression *PexprRemoveUnusedCTEs2(IMemoryPool *pmp, CExpression *pexpr);
 
 			// collect CTE predicates from consumers
 			static
@@ -157,9 +213,22 @@ namespace gpopt
 			static
 			CExpression *PexprInferPredicates(IMemoryPool *pmp, CExpression *pexpr);
 
+			// driver for inferring predicates from constraints
+			static
+			CExpression *PexprInferPredicates2(IMemoryPool *pmp, CExpression *pexpr);
+
 			// driver for pruning unused computed columns
 			static CExpression *
 			PexprPruneUnusedComputedCols
+				(
+				IMemoryPool *pmp,
+				CExpression *pexpr,
+				CColRefSet *pcrsReqd
+				);
+
+			// driver for pruning unused computed columns
+			static CExpression *
+			PexprPruneUnusedComputedCols2
 				(
 				IMemoryPool *pmp,
 				CExpression *pexpr,
@@ -208,6 +277,10 @@ namespace gpopt
 			// derive constraints on given expression
 			static
 			CExpression *PexprAddPredicatesFromConstraints(IMemoryPool *pmp, CExpression *pexpr);
+
+			// derive constraints on given expression
+			static
+			CExpression *PexprAddPredicatesFromConstraints2(IMemoryPool *pmp, CExpression *pexpr);
 
 			// convert series of AND or OR comparisons into array IN expressions
 			static
